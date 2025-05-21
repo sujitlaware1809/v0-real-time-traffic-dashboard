@@ -1,14 +1,100 @@
-import { Download, Filter, MapPin, MoreHorizontal, RefreshCw } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { TrafficCameraFeed } from "@/components/traffic-camera-feed"
-import { TrafficHeatmap } from "@/components/traffic-heatmap"
-import { TrafficTrends } from "@/components/traffic-trends"
+"use client";
+
+import { Download, Filter, MapPin, MoreHorizontal, RefreshCw } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { TrafficTrends } from "@/components/traffic-trends";
+import { useRef, useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+
+// Dynamically import the TrafficHeatmap component with no SSR
+const TrafficHeatmap = dynamic(() => import("@/components/traffic-heatmap").then(mod => mod.TrafficHeatmap), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-[400px] items-center justify-center bg-muted">
+      <RefreshCw className="h-8 w-8 animate-spin text-blue-500" />
+      <span className="ml-2 text-gray-600">Loading heatmap...</span>
+    </div>
+  )
+});
+
+// Enhanced CCTV-style live camera feed component
+const LiveCameraFeed = ({ id, status }: { id: number; status: string }) => {
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [hasSignal, setHasSignal] = useState(true);
+  const [glitchEffect, setGlitchEffect] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+      
+      if (Math.random() < 0.05 && status === "Online") {
+        setHasSignal(false);
+        setTimeout(() => setHasSignal(true), 2000 + Math.random() * 3000);
+      }
+      
+      if (Math.random() < 0.1 && status === "Online") {
+        setGlitchEffect(true);
+        setTimeout(() => setGlitchEffect(false), 100 + Math.random() * 300);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [status]);
+
+  if (status !== "Online") {
+    return (
+      <div className="flex h-48 items-center justify-center bg-gray-800 text-gray-400">
+        <div className="text-center">
+          <p>Camera Offline</p>
+          <p className="text-sm">Last connected: {Math.floor(Math.random() * 12) + 1} hours ago</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative h-48 w-full overflow-hidden bg-black">
+      <div className={`relative h-full w-full ${glitchEffect ? 'animate-glitch' : ''}`}>
+        <div className="absolute inset-0 bg-black opacity-30">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:100%_2px]"></div>
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMwMDAiLz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsLW9wYWNpdHk9IjAuMDIiIGZpbGw9IiNmZmYiIHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiLz48L3N2Zz4=')] opacity-30"></div>
+        </div>
+        
+        <div className="relative h-full w-full overflow-hidden">
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            loop
+            className="h-full w-full object-cover opacity-90"
+          >
+            <source src={`/cctv-feed-${id % 5 + 1}.mp4`} type="video/mp4" />
+          </video>
+        </div>
+      </div>
+      
+      <div className="absolute bottom-2 right-2 rounded bg-black bg-opacity-70 px-1.5 py-0.5 text-xs text-white font-mono">
+        {currentTime.toLocaleTimeString()} | CAM {id.toString().padStart(2, '0')}
+      </div>
+      <div className="absolute left-2 top-2 rounded bg-red-500 px-1.5 py-0.5 text-xs font-medium text-white animate-pulse">
+        REC • LIVE
+      </div>
+      <div className="absolute right-2 top-2 rounded bg-black bg-opacity-70 px-1.5 py-0.5 text-xs text-white">
+        {Math.floor(Math.random() * 24) + 1}FPS
+      </div>
+    </div>
+  );
+};
 
 export default function TrafficMonitoringPage() {
+  const [timePeriod, setTimePeriod] = useState("now");
+  const [vehicleFilter, setVehicleFilter] = useState("all");
+
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -99,7 +185,7 @@ export default function TrafficMonitoringPage() {
                 },
               ].map((camera) => (
                 <Card key={camera.id} className="overflow-hidden">
-                  <TrafficCameraFeed id={camera.id} status={camera.status} />
+                  <LiveCameraFeed id={camera.id} status={camera.status} />
                   <CardContent className="p-3">
                     <div className="flex items-start justify-between">
                       <div>
@@ -147,109 +233,134 @@ export default function TrafficMonitoringPage() {
             <CardDescription>Current traffic conditions by area</CardDescription>
           </CardHeader>
           <CardContent className="space-y-8">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">Downtown</span>
+            {[
+              { area: "Downtown", value: 85, level: "Heavy", color: "red" },
+              { area: "North District", value: 60, level: "Medium", color: "amber" },
+              { area: "East District", value: 30, level: "Light", color: "emerald" },
+              { area: "South District", value: 55, level: "Medium", color: "amber" },
+              { area: "West District", value: 75, level: "Heavy", color: "red" },
+            ].map((item) => (
+              <div key={item.area} className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium">{item.area}</span>
+                  </div>
+                  <Badge variant={item.level === "Heavy" ? "destructive" : item.level === "Medium" ? "default" : "outline"}>
+                    {item.level}
+                  </Badge>
                 </div>
-                <Badge variant="destructive">Heavy</Badge>
-              </div>
-              <div className="h-2 rounded-full bg-muted">
-                <div className="h-2 w-[85%] rounded-full bg-red-500" />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">North District</span>
+                <div className="h-2 rounded-full bg-muted">
+                  <div 
+                    className={`h-2 rounded-full bg-${item.color}-500`}
+                    style={{ width: `${item.value}%` }}
+                  />
                 </div>
-                <Badge>Medium</Badge>
               </div>
-              <div className="h-2 rounded-full bg-muted">
-                <div className="h-2 w-[60%] rounded-full bg-amber-500" />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">East District</span>
-                </div>
-                <Badge variant="outline">Light</Badge>
-              </div>
-              <div className="h-2 rounded-full bg-muted">
-                <div className="h-2 w-[30%] rounded-full bg-emerald-500" />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">South District</span>
-                </div>
-                <Badge>Medium</Badge>
-              </div>
-              <div className="h-2 rounded-full bg-muted">
-                <div className="h-2 w-[55%] rounded-full bg-amber-500" />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">West District</span>
-                </div>
-                <Badge variant="destructive">Heavy</Badge>
-              </div>
-              <div className="h-2 rounded-full bg-muted">
-                <div className="h-2 w-[75%] rounded-full bg-red-500" />
-              </div>
-            </div>
+            ))}
           </CardContent>
         </Card>
       </div>
 
-      <Tabs defaultValue="heatmap">
+      <Tabs defaultValue="map">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="heatmap">Traffic Heatmap</TabsTrigger>
+          <TabsTrigger value="map">Live Traffic Heatmap</TabsTrigger>
           <TabsTrigger value="trends">Traffic Trends</TabsTrigger>
         </TabsList>
-        <TabsContent value="heatmap" className="mt-4">
+        <TabsContent value="map" className="mt-4">
           <Card>
             <CardHeader>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <CardTitle>City Traffic Heatmap</CardTitle>
+                  <CardTitle>Traffic Heatmap</CardTitle>
                   <CardDescription>Real-time traffic density visualization</CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Select defaultValue="now">
+                  <Select 
+                    defaultValue="all"
+                    value={vehicleFilter}
+                    onValueChange={(value) => setVehicleFilter(value)}
+                  >
                     <SelectTrigger className="w-[140px]">
-                      <SelectValue placeholder="Time period" />
+                      <SelectValue placeholder="Vehicle type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="now">Current</SelectItem>
-                      <SelectItem value="1h">Last Hour</SelectItem>
-                      <SelectItem value="3h">Last 3 Hours</SelectItem>
-                      <SelectItem value="6h">Last 6 Hours</SelectItem>
-                      <SelectItem value="12h">Last 12 Hours</SelectItem>
-                      <SelectItem value="24h">Last 24 Hours</SelectItem>
+                      <SelectItem value="all">All Vehicles</SelectItem>
+                      <SelectItem value="car">Cars Only</SelectItem>
+                      <SelectItem value="truck">Trucks Only</SelectItem>
+                      <SelectItem value="bus">Buses Only</SelectItem>
+                      <SelectItem value="emergency">Emergency Vehicles</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button variant="outline" size="icon">
                     <Filter className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex items-center gap-1">
+                    <Download className="h-4 w-4" />
+                    <span className="hidden sm:inline">Export</span>
                   </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <TrafficHeatmap />
+              
+              {/* Heatmap Legend */}
+              <div className="mt-4 flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 rounded bg-blue-400"></div>
+                  <span className="text-sm">Low Traffic</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 rounded bg-yellow-400"></div>
+                  <span className="text-sm">Medium Traffic</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 rounded bg-red-500"></div>
+                  <span className="text-sm">High Traffic</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 rounded bg-purple-500"></div>
+                  <span className="text-sm">Congestion</span>
+                </div>
+              </div>
+              
+              {/* Traffic Incidents */}
+              <div className="mt-6">
+                <h3 className="font-medium">Recent Traffic Incidents</h3>
+                <div className="mt-2 space-y-2">
+                  <div className="rounded-md border border-red-200 bg-red-50 p-3">
+                    <div className="flex items-start">
+                      <div className="mr-2 rounded-full bg-red-500 p-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                          <path d="M12 9v4"></path>
+                          <path d="M12 17h.01"></path>
+                          <path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0Z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium">Traffic Accident at Main St. & 5th Ave</h4>
+                        <p className="text-xs text-gray-500">Reported 15 minutes ago - 2 vehicles involved</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-md border border-amber-200 bg-amber-50 p-3">
+                    <div className="flex items-start">
+                      <div className="mr-2 rounded-full bg-amber-500 p-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                          <path d="M12 9v4"></path>
+                          <path d="M12 17h.01"></path>
+                          <path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0 Z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium">Road Work on Broadway & 7th</h4>
+                        <p className="text-xs text-gray-500">Ongoing until 5:00 PM - Lane closure in effect</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -286,5 +397,5 @@ export default function TrafficMonitoringPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

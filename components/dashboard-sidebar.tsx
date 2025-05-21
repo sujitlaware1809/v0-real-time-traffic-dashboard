@@ -15,6 +15,8 @@ import {
   Settings,
   Shield,
   TrafficCone,
+  TrendingUp, // Added this import
+  Leaf, // Added Leaf import
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -59,6 +61,16 @@ export function DashboardSidebar() {
       title: "Vehicle Management",
       href: "/vehicle-management",
       icon: Car,
+    },
+    {
+      title: "Traffic Forecast",
+      href: "/traffic-forecast",
+      icon: TrendingUp, // Changed from Car to TrendingUp
+    },
+    {
+      title: "EV Analytics",
+      icon: Leaf,
+      href: "/ev-analytics", // Changed from Car to Leaf
     },
     {
       title: "Settings",

@@ -1,13 +1,15 @@
-import { AlertCircle, Calendar, Download, Filter, Search } from "lucide-react"
+"use client";
+import { AlertCircle, Calendar, Download, Filter, Search, RefreshCw } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ViolationList } from "@/components/violation-list"
-import { ViolationMap } from "@/components/violation-map"
+import ViolationMap from "@/components/violation-map"
 import { ViolationTrends } from "@/components/violation-trends"
 import { ViolationTypes } from "@/components/violation-types"
+import { useState } from "react"
 
 export default function ViolationDetectionPage() {
   return (
@@ -123,32 +125,7 @@ export default function ViolationDetectionPage() {
           <TabsTrigger value="trends">Violation Trends</TabsTrigger>
         </TabsList>
         <TabsContent value="map" className="mt-4">
-          <Card>
-            <CardHeader>
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <CardTitle>Violation Hotspots</CardTitle>
-                  <CardDescription>Geographic distribution of traffic violations</CardDescription>
-                </div>
-                <Select defaultValue="all">
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Violation type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Violations</SelectItem>
-                    <SelectItem value="speeding">Speeding</SelectItem>
-                    <SelectItem value="redlight">Red Light</SelectItem>
-                    <SelectItem value="nohelmet">No Helmet</SelectItem>
-                    <SelectItem value="noseatbelt">No Seatbelt</SelectItem>
-                    <SelectItem value="wronglane">Wrong Lane</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ViolationMap />
-            </CardContent>
-          </Card>
+          <ViolationMap />
         </TabsContent>
         <TabsContent value="trends" className="mt-4">
           <Card>
@@ -194,5 +171,5 @@ export default function ViolationDetectionPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
