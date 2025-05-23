@@ -1,36 +1,21 @@
 "use client"
 
-import { MapContainer, TileLayer, Circle, Tooltip, Marker } from "react-leaflet"
-import "leaflet/dist/leaflet.css"
 import { useEffect, useState } from "react"
-import L from "leaflet"
 import React, { Fragment } from 'react';
 
+// Dynamically import Leaflet components only on client side
+let MapContainer: any, TileLayer: any, Circle: any, Tooltip: any, Marker: any, L: any;
 
-// ICONS
-const constructionIcon = new L.Icon({
-  iconUrl: "/icons/construction.png",
-  iconSize: [26, 26],
-  iconAnchor: [13, 26],
-})
-
-const cameraIcon = new L.Icon({
-  iconUrl: "/icons/camera.png",
-  iconSize: [20, 20],
-  iconAnchor: [10, 20],
-})
-
-const barrierIcon = new L.Icon({
-  iconUrl: "/icons/barrier.png",
-  iconSize: [24, 24],
-  iconAnchor: [12, 24],
-})
-
-const signalIcon = new L.Icon({
-  iconUrl: "/icons/signal.png",
-  iconSize: [22, 22],
-  iconAnchor: [11, 22],
-})
+if (typeof window !== 'undefined') {
+  const leaflet = require('react-leaflet');
+  MapContainer = leaflet.MapContainer;
+  TileLayer = leaflet.TileLayer;
+  Circle = leaflet.Circle;
+  Tooltip = leaflet.Tooltip;
+  Marker = leaflet.Marker;
+  L = require('leaflet');
+  require('leaflet/dist/leaflet.css');
+}
 
 // 📶 Generate live traffic density points
 const generateTrafficPoints = (count = 100) => {
@@ -45,7 +30,7 @@ const generateTrafficPoints = (count = 100) => {
 }
 
 // 📷 Generate fixed CCTV camera positions (only once)
-const fixedCCTVPoints = (() => {
+const generateFixedCCTVPoints = () => {
   const baseLat = 12.9716
   const baseLng = 77.5946
   return Array.from({ length: 30 }, (_, i) => ({
@@ -54,7 +39,7 @@ const fixedCCTVPoints = (() => {
     lng: baseLng + (Math.random() - 0.5) * 0.1,
     description: `CCTV – Zone ${i + 1}`,
   }))
-})()
+}
 
 // 🏗 Construction Zones
 const constructionZones = [
@@ -78,15 +63,65 @@ const signals = [
 ]
 
 export function CityMap() {
-  const [trafficPoints, setTrafficPoints] = useState(generateTrafficPoints())
+  const [isClient, setIsClient] = useState(false);
+  const [trafficPoints, setTrafficPoints] = useState<any[]>([]);
+  const [fixedCCTVPoints, setFixedCCTVPoints] = useState<any[]>([]);
+  const [icons, setIcons] = useState<any>({});
+
+  // Initialize client-side only
+  useEffect(() => {
+    setIsClient(true);
+    setTrafficPoints(generateTrafficPoints());
+    setFixedCCTVPoints(generateFixedCCTVPoints());
+    
+    // Initialize icons only on client side
+    if (typeof window !== 'undefined' && L) {
+      setIcons({
+        constructionIcon: new L.Icon({
+          iconUrl: "/icons/construction.png",
+          iconSize: [26, 26],
+          iconAnchor: [13, 26],
+        }),
+        cameraIcon: new L.Icon({
+          iconUrl: "/icons/camera.png",
+          iconSize: [20, 20],
+          iconAnchor: [10, 20],
+        }),
+        barrierIcon: new L.Icon({
+          iconUrl: "/icons/barrier.png",
+          iconSize: [24, 24],
+          iconAnchor: [12, 24],
+        }),
+        signalIcon: new L.Icon({
+          iconUrl: "/icons/signal.png",
+          iconSize: [22, 22],
+          iconAnchor: [11, 22],
+        })
+      });
+    }
+  }, []);
 
   // 🔁 Update only traffic points every 4 seconds
   useEffect(() => {
+    if (!isClient) return;
+    
     const interval = setInterval(() => {
       setTrafficPoints(generateTrafficPoints())
     }, 4000)
     return () => clearInterval(interval)
-  }, [])
+  }, [isClient])
+
+  // Don't render on server side
+  if (!isClient || !MapContainer) {
+    return (
+      <div className="h-[400px] w-full rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-pulse bg-gray-300 h-4 w-32 mx-auto mb-2 rounded"></div>
+          <div className="text-gray-600 text-sm">Loading traffic map...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[400px] w-full rounded-md overflow-hidden">
@@ -142,39 +177,39 @@ export function CityMap() {
           <Marker
             key={cam.id}
             position={[cam.lat, cam.lng]}
-            icon={cameraIcon}
+            icon={icons.cameraIcon}
           >
             <Tooltip>{cam.description}</Tooltip>
           </Marker>
         ))}
 
-{/* 🏗 Construction Zones */}
-{constructionZones.map((zone, i) => (
-  <Fragment key={`cz-fragment-${i}`}>
-    <Circle
-      center={[zone.lat, zone.lng]}
-      radius={60}
-      pathOptions={{
-        fillColor: "#FFA726",
-        color: "#FB8C00",
-        fillOpacity: 0.3,
-      }}
-    >
-      <Tooltip>{zone.description}</Tooltip>
-    </Circle>
-    <Marker
-      position={[zone.lat, zone.lng]}
-      icon={constructionIcon}
-    />
-  </Fragment>
-))}
+        {/* 🏗 Construction Zones */}
+        {constructionZones.map((zone, i) => (
+          <Fragment key={`cz-fragment-${i}`}>
+            <Circle
+              center={[zone.lat, zone.lng]}
+              radius={60}
+              pathOptions={{
+                fillColor: "#FFA726",
+                color: "#FB8C00",
+                fillOpacity: 0.3,
+              }}
+            >
+              <Tooltip>{zone.description}</Tooltip>
+            </Circle>
+            <Marker
+              position={[zone.lat, zone.lng]}
+              icon={icons.constructionIcon}
+            />
+          </Fragment>
+        ))}
 
         {/* 🚫 Barriers */}
         {barriers.map((bar, i) => (
           <Marker
             key={`barrier-${i}`}
             position={[bar.lat, bar.lng]}
-            icon={barrierIcon}
+            icon={icons.barrierIcon}
           >
             <Tooltip>{bar.description}</Tooltip>
           </Marker>
@@ -185,7 +220,7 @@ export function CityMap() {
           <Marker
             key={`signal-${i}`}
             position={[sig.lat, sig.lng]}
-            icon={signalIcon}
+            icon={icons.signalIcon}
           >
             <Tooltip>{sig.description}</Tooltip>
           </Marker>
