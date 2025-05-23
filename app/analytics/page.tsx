@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { FC } from "react";
 import {
   BarChart3,
   Calendar,
@@ -32,22 +33,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// ✅ Dynamically import analytics components with SSR disabled
-const TrafficAnalytics = dynamic(() =>
-  import("@/components/traffic-analytics").then((mod) => mod.default),
-  { ssr: false }
+// Dynamically import analytics components with SSR disabled
+const TrafficAnalytics = dynamic(
+  () => import("@/components/traffic-analytics").then((mod) => mod.TrafficAnalytics),
+  { 
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full flex items-center justify-center">Loading traffic data...</div>
+  }
 );
-const ViolationAnalytics = dynamic(() =>
-  import("@/components/violation-analytics").then((mod) => mod.default),
-  { ssr: false }
+
+const ViolationAnalytics = dynamic(
+  () => import("@/components/violation-analytics").then((mod) => mod.ViolationAnalytics),
+  { 
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full flex items-center justify-center">Loading violation data...</div>
+  }
 );
-const AccidentAnalytics = dynamic(() =>
-  import("@/components/accident-analytics").then((mod) => mod.default),
-  { ssr: false }
+
+const AccidentAnalytics = dynamic(
+  () => import("@/components/accident-analytics").then((mod) => mod.AccidentAnalytics),
+  { 
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full flex items-center justify-center">Loading accident data...</div>
+  }
 );
-const PredictiveAnalytics = dynamic(() =>
-  import("@/components/predictive-analytics").then((mod) => mod.default),
-  { ssr: false }
+
+const PredictiveAnalytics = dynamic(
+  () => import("@/components/predictive-analytics").then((mod) => mod.PredictiveAnalytics),
+  { 
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full flex items-center justify-center">Loading predictions...</div>
+  }
 );
 
 

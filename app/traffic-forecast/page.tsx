@@ -192,6 +192,7 @@ export default function TrafficForecastPage() {
   <circle cx="4" cy="4" r="4" fill="#8884d8" />
 </svg>
 
+
                       );
                     }}
                   />

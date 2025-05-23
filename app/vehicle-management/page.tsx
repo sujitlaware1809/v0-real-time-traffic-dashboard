@@ -1,15 +1,45 @@
 "use client";
 import dynamic from 'next/dynamic';
-import type { FC } from "react"
-import { Car, Download, Filter, Plus, RefreshCw, Search } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-const VehicleMap = dynamic(() => import("@/components/vehicle-map"), { ssr: false })
-const VehicleList = dynamic(() => import("@/components/vehicle-list"), { ssr: false })
-const VehicleStats = dynamic(() => import("@/components/vehicle-stats"), { ssr: false })
+import type { FC, ComponentType } from "react";
+import { Car, Download, Filter, Plus, RefreshCw, Search } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+const VehicleMap = dynamic(
+  () => import("@/components/vehicle-map").then((mod) => mod.VehicleMap),
+  { 
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full flex items-center justify-center">Loading vehicle map...</div>
+  }
+);
+
+const VehicleList = dynamic(
+  () => import("@/components/vehicle-list").then((mod) => mod.VehicleList),
+  { 
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full flex items-center justify-center">Loading vehicle list...</div>
+  }
+);
+
+const VehicleStats = dynamic(
+  () => import("@/components/vehicle-stats").then((mod) => mod.VehicleStats),
+  { 
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full flex items-center justify-center">Loading vehicle stats...</div>
+  }
+);
+
+const VehiclePage: FC = () => {
+  // Your page implementation here
+  return (
+    <div className="flex flex-col gap-6 p-6">
+      {/* Page content */}
+    </div>
+  );
+};
 
 export default function VehicleManagementPage() {
   return (

@@ -35,28 +35,39 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 
-// ✅ Dynamically import components to avoid SSR issues
+// Dynamically import components to avoid SSR issues
 const AccidentMap = dynamic(() =>
-  import("@/components/accident-map").then((mod) => mod.default),
-  { ssr: false }
+  import("@/components/accident-map").then((mod) => mod.AccidentMap),
+  { 
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full flex items-center justify-center">Loading map...</div>
+  }
 );
 
-const AccidentList = dynamic(() =>
-  import("@/components/accident-list").then((mod) => mod.default),
-  { ssr: false }
-);
-
-const AccidentTrends = dynamic(() =>
-  import("@/components/accident-trends").then((mod) => mod.default),
-  { ssr: false }
-);
-
-const EmergencyResponseTime = dynamic(() =>
-  import("@/components/emergency-response-time").then((mod) => mod.default),
-  { ssr: false }
+const AccidentList = dynamic(
+  () => import("@/components/accident-list").then((mod) => mod.AccidentList),
+  { 
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full flex items-center justify-center">Loading incidents...</div>
+  }
 );
 
 
+const AccidentTrends = dynamic(
+  () => import("@/components/accident-trends").then((mod) => mod.AccidentTrends),
+  { 
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full flex items-center justify-center">Loading trends...</div>
+  }
+);
+
+const EmergencyResponseTime = dynamic(
+  () => import("@/components/emergency-response-time").then((mod) => mod.EmergencyResponseTime),
+  { 
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full flex items-center justify-center">Loading response data...</div>
+  }
+);
 export default function AccidentDetectionPage() {
   return (
     <div className="flex flex-col gap-6 p-6">

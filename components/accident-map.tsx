@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { MapContainer, TileLayer, Circle, Tooltip, Marker, Popup, useMap } from "react-leaflet"
-import "leaflet/dist/leaflet.css"
-import L from "leaflet"
+import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Circle, Tooltip, Marker, Popup, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 import {
   Card,
   CardContent,
@@ -11,8 +11,8 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { 
   AlertTriangle, 
   Clock, 
@@ -25,7 +25,7 @@ import {
   Info, 
   Activity,
   Filter
-} from "lucide-react"
+} from "lucide-react";
 
 // Type definitions
 type IncidentType = "accident" | "medical" | "fire" | "police" | "hazard";
@@ -62,35 +62,35 @@ const accidentIcon = new L.Icon({
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
-})
+});
 
 const medicalIcon = new L.Icon({
   iconUrl: "/icons/medical.png",
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
-})
+});
 
 const fireIcon = new L.Icon({
   iconUrl: "/icons/fire.png",
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
-})
+});
 
 const policeIcon = new L.Icon({
   iconUrl: "/icons/police.png",
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
-})
+});
 
 const hazardIcon = new L.Icon({
   iconUrl: "/icons/hazard.png",
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
-})
+});
 
 // Icons for emergency zones
 const hospitalIcon = new L.Icon({
@@ -98,21 +98,21 @@ const hospitalIcon = new L.Icon({
   iconSize: [28, 28],
   iconAnchor: [14, 28],
   popupAnchor: [0, -28],
-})
+});
 
 const fireStationIcon = new L.Icon({
   iconUrl: "/icons/fire_station.png",
   iconSize: [28, 28],
   iconAnchor: [14, 28],
   popupAnchor: [0, -28],
-})
+});
 
 const policeStationIcon = new L.Icon({
   iconUrl: "/icons/police_station.png",
   iconSize: [28, 28],
   iconAnchor: [14, 28],
   popupAnchor: [0, -28],
-})
+});
 
 // Function to get appropriate icon based on incident type
 const getIncidentIcon = (type: IncidentType) => {
@@ -205,7 +205,6 @@ const emergencyZones: EmergencyZone[] = [
     respondersAvailable: 3,
   },
 ];
-
 
 // Sample incidents in Mumbai
 const sampleIncidents: Incident[] = [
@@ -594,7 +593,6 @@ export function AccidentMap() {
         <div className="h-[400px] w-full">
           <MapContainer
             center={[12.9716, 77.5946]} // Bengaluru coordinates
- // Mumbai coordinates
             zoom={12}
             scrollWheelZoom={true}
             style={{ height: "100%", width: "100%" }}
