@@ -170,6 +170,7 @@ const getCongestionColor = (severity: CongestionSeverity) => {
     default: return "#9E9E9E"
   }
 }
+
 const generateRealisticSignals = (prevSignals: Signal[] = []): Signal[] => {
   const pattern = getTrafficPattern();
 
@@ -274,10 +275,6 @@ export function SignalControlMap() {
     const timeInterval = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
-
-    // Add placeholder signal icon images (in a real application, these would be actual image files)
-    // This is a workaround since we can't actually create new image files
-    console.log("Signal icons would be created at runtime in a real application");
 
     return () => clearInterval(timeInterval);
   }, []);

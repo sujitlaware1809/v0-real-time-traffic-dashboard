@@ -1,18 +1,35 @@
-import { ArrowUpRight, Clock, Download, Filter, RotateCw, Settings } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { SignalControlMap } from "@/components/signal-control-map"
-import { SignalPerformance } from "@/components/signal-performance"
-import { SignalOptimization } from "@/components/signal-optimization"
+"use client";
+
+import dynamic from 'next/dynamic';
+import { ArrowUpRight, Clock, Download, Filter, RotateCw, Settings } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+
+// Dynamically import map with SSR disabled and proper error handling
+const SignalControlMap = dynamic(
+  () => import("@/components/signal-control-map").then((mod) => mod.SignalControlMap),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="h-[500px] flex items-center justify-center bg-gray-100 rounded-md">
+        <p className="text-gray-500">Loading traffic map...</p>
+      </div>
+    )
+  }
+);
+
+import { SignalPerformance } from "@/components/signal-performance";
+import { SignalOptimization } from "@/components/signal-optimization";
 
 export default function SignalControlPage() {
   return (
     <div className="flex flex-col gap-6 p-6">
+      {/* Header Section */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Smart Signal Control</h1>
@@ -34,6 +51,7 @@ export default function SignalControlPage() {
         </div>
       </div>
 
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
@@ -81,6 +99,7 @@ export default function SignalControlPage() {
         </Card>
       </div>
 
+      {/* Main Content Area */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
@@ -113,6 +132,8 @@ export default function SignalControlPage() {
             <SignalControlMap />
           </CardContent>
         </Card>
+        
+        {/* Status Card */}
         <Card>
           <CardHeader>
             <CardTitle>Signal Status</CardTitle>
@@ -165,6 +186,7 @@ export default function SignalControlPage() {
         </Card>
       </div>
 
+      {/* Tabs Section */}
       <Tabs defaultValue="performance">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="performance">Signal Performance</TabsTrigger>
@@ -217,6 +239,7 @@ export default function SignalControlPage() {
         </TabsContent>
       </Tabs>
 
+      {/* Intersection Cards */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {[
           {

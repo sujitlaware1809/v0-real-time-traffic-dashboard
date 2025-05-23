@@ -1,13 +1,15 @@
 "use client";
+import dynamic from 'next/dynamic';
+import type { FC } from "react"
 import { Car, Download, Filter, Plus, RefreshCw, Search } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { VehicleList } from "@/components/vehicle-list"
-import { VehicleMap } from "@/components/vehicle-map"
-import { VehicleStats } from "@/components/vehicle-stats"
+const VehicleMap = dynamic(() => import("@/components/vehicle-map"), { ssr: false })
+const VehicleList = dynamic(() => import("@/components/vehicle-list"), { ssr: false })
+const VehicleStats = dynamic(() => import("@/components/vehicle-stats"), { ssr: false })
 
 export default function VehicleManagementPage() {
   return (

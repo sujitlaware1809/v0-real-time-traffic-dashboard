@@ -1,23 +1,74 @@
 "use client";
-import { AlertCircle, Calendar, Download, Filter, Search, RefreshCw } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ViolationList } from "@/components/violation-list"
-import ViolationMap from "@/components/violation-map"
-import { ViolationTrends } from "@/components/violation-trends"
-import { ViolationTypes } from "@/components/violation-types"
-import { useState } from "react"
+
+import dynamic from "next/dynamic";
+import {
+  AlertCircle,
+  Calendar,
+  Download,
+  Filter,
+  Search,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+
+// ✅ Dynamic imports with SSR disabled
+const ViolationMap = dynamic(() => import("@/components/violation-map"), {
+  ssr: false,
+  loading: () => (
+    <Card>
+      <CardContent className="p-6">
+        <div className="h-[400px] bg-gray-100 rounded-lg flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading violation map...</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  ),
+});
+
+const ViolationList = dynamic(() => import("@/components/violation-list").then(mod => mod.default), {
+  ssr: false,
+});
+const ViolationTrends = dynamic(() => import("@/components/violation-trends").then(mod => mod.default), {
+  ssr: false,
+});
+const ViolationTypes = dynamic(() => import("@/components/violation-types").then(mod => mod.default), {
+  ssr: false,
+});
 
 export default function ViolationDetectionPage() {
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Violation Detection</h1>
-          <p className="text-muted-foreground">AI-powered traffic violation monitoring and enforcement</p>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Violation Detection
+          </h1>
+          <p className="text-muted-foreground">
+            AI-powered traffic violation monitoring and enforcement
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" size="sm" className="h-8 gap-1">
@@ -37,7 +88,9 @@ export default function ViolationDetectionPage() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Violations</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Violations
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1,248</div>
@@ -59,7 +112,9 @@ export default function ViolationDetectionPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Detection Accuracy</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Detection Accuracy
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">96.8%</div>
@@ -87,7 +142,9 @@ export default function ViolationDetectionPage() {
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <CardTitle>Recent Violations</CardTitle>
-                <CardDescription>Latest detected traffic violations</CardDescription>
+                <CardDescription>
+                  Latest detected traffic violations
+                </CardDescription>
               </div>
               <div className="flex items-center gap-2">
                 <div className="relative">
@@ -133,7 +190,9 @@ export default function ViolationDetectionPage() {
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <CardTitle>Violation Trends</CardTitle>
-                  <CardDescription>Historical patterns and predictions</CardDescription>
+                  <CardDescription>
+                    Historical patterns and predictions
+                  </CardDescription>
                 </div>
                 <Select defaultValue="30d">
                   <SelectTrigger className="w-[140px]">

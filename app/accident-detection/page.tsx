@@ -1,14 +1,61 @@
-import { AlertTriangle, Calendar, Clock, Download, Filter, MapPin, RotateCw, Search } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AccidentMap } from "@/components/accident-map"
-import { AccidentList } from "@/components/accident-list"
-import { AccidentTrends } from "@/components/accident-trends"
-import { EmergencyResponseTime } from "@/components/emergency-response-time"
+"use client";
+
+import dynamic from "next/dynamic";
+import {
+  AlertTriangle,
+  Calendar,
+  Clock,
+  Download,
+  Filter,
+  MapPin,
+  RotateCw,
+  Search,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+
+// ✅ Dynamically import components to avoid SSR issues
+const AccidentMap = dynamic(() =>
+  import("@/components/accident-map").then((mod) => mod.default),
+  { ssr: false }
+);
+
+const AccidentList = dynamic(() =>
+  import("@/components/accident-list").then((mod) => mod.default),
+  { ssr: false }
+);
+
+const AccidentTrends = dynamic(() =>
+  import("@/components/accident-trends").then((mod) => mod.default),
+  { ssr: false }
+);
+
+const EmergencyResponseTime = dynamic(() =>
+  import("@/components/emergency-response-time").then((mod) => mod.default),
+  { ssr: false }
+);
+
 
 export default function AccidentDetectionPage() {
   return (

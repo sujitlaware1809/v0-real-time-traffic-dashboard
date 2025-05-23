@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { MoreHorizontal } from "lucide-react"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { MoreHorizontal } from "lucide-react";
 
 const violationData = [
   {
@@ -51,9 +51,9 @@ const violationData = [
     status: "Pending Review",
     severity: "medium",
   },
-]
+];
 
-export function ViolationList() {
+const ViolationList = () => {
   return (
     <div className="overflow-auto">
       <table className="w-full text-sm">
@@ -108,5 +108,7 @@ export function ViolationList() {
         <Button variant="outline">Load More</Button>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default ViolationList; // ✅ Make this the default export

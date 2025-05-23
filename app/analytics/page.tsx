@@ -1,12 +1,55 @@
-import { BarChart3, Calendar, Download, Filter, PieChart, RefreshCw, TrendingUp } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { TrafficAnalytics } from "@/components/traffic-analytics"
-import { ViolationAnalytics } from "@/components/violation-analytics"
-import { AccidentAnalytics } from "@/components/accident-analytics"
-import { PredictiveAnalytics } from "@/components/predictive-analytics"
+"use client";
+
+import dynamic from "next/dynamic";
+import {
+  BarChart3,
+  Calendar,
+  Download,
+  Filter,
+  PieChart,
+  RefreshCw,
+  TrendingUp,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// ✅ Dynamically import analytics components with SSR disabled
+const TrafficAnalytics = dynamic(() =>
+  import("@/components/traffic-analytics").then((mod) => mod.default),
+  { ssr: false }
+);
+const ViolationAnalytics = dynamic(() =>
+  import("@/components/violation-analytics").then((mod) => mod.default),
+  { ssr: false }
+);
+const AccidentAnalytics = dynamic(() =>
+  import("@/components/accident-analytics").then((mod) => mod.default),
+  { ssr: false }
+);
+const PredictiveAnalytics = dynamic(() =>
+  import("@/components/predictive-analytics").then((mod) => mod.default),
+  { ssr: false }
+);
+
 
 export default function AnalyticsPage() {
   return (
